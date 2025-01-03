@@ -1,0 +1,11 @@
+ % curl -X POST "http://127.0.0.1:8000/assist-genie/api/v1/chat" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer your_api_token" \
+-d '{
+  "question": "What is the content of the document?",
+  "usecase": {
+    "name": "tooling",
+    "key": "value"
+  }
+}'
+{"feedback":"The document provides insights into data engineering, focusing on the most popular and in-demand jobs in the big data domain. It highlights 20 commonly used data engineering tools at mid-sized tech companies based on interviews with data engineers. The document discusses tools like Snowflake, dbt, BigQuery, Tableau, Looker, Apache Spark, Apache Airflow, Apache Hive, and Segment. It also covers key considerations for choosing data engineering tools and what data teams are excited to use. Additionally, it explores trends in data engineering and the future of the field, including the Analy
