@@ -1,0 +1,14 @@
+openaillm_provider: 
+  name: "OpenAI"
+  api_keys: "your-openai-api-key"
+  model_settings:
+    model_name: "gpt-3.5-turbo"
+    temperature: 0
+
+geminillm_provider: 
+  name: "gemini"
+  api_keys: "your-gemini-api-key"
+  model_settings:
+    model_name: "gemini-2.0_Flash"
+    temperature: 0
+

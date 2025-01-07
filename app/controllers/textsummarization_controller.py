@@ -1,12 +1,19 @@
 from langchain_community.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
-from data_reader import DataReader
-from embedding import EmbeddingsGenerator
-from vector_store import VectorStore
+from app.utils.data_reader import DataReader
+from app.models.embedding import EmbeddingsGenerator
+from app.controllers.vector_store import VectorStore
 import tiktoken
-import os
+import os,yaml
+from app.controllers import CONFIG_FILE_PATH,set_config_location
 from langchain_community.embeddings import OpenAIEmbeddings
-class EmbeddingsGenerator:
+
+config = set_config_location()
+print("config values here is",config)
+
+
+
+class openAIAPIKEY:
     def __init__(self):
         if not openai_api_key:
             raise ValueError("OPENAI_API_KEY environment variable not set")
@@ -15,12 +22,10 @@ class EmbeddingsGenerator:
 class ChatbotService:
     def __init__(self, pdf_path):
         self.reader = DataReader(pdf_path)
-        self.embeddings_generator = EmbeddingsGenerator()
+        self.embeddings_generator = openAIAPIKEY()
         self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key= openai_api_key )
         self.qa_chain = None
         self.tokenizer = tiktoken.encoding_for_model("gpt-4")
-
-        # Initialize retriever and QA chain
         self.initialize_service()
 
     def initialize_service(self):
