@@ -4,3 +4,4 @@ langchain
 PyPDF2
 chromadb
 tiktoken
+google-generativeai

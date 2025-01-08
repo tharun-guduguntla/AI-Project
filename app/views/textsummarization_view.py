@@ -1,17 +1,27 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from fastapi import APIRouter,FastAPI, HTTPException, Query
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Query
 from app.controllers.textsummarization_controller import ChatbotService
-import os, sys
+# from app.controllers.llmfactory import 
+from app.controllers import CONFIG_FILE_PATH,set_config_location
 
+
+
+# Load configuration
+CONFIG_PATH = "config/llm.yaml"
+config = set_config_location()
+# config = load_config(CONFIG_PATH)
+
+# PDF path
 PDF_PATH = "data/Data_LLM.pdf"
-chatbot_service = ChatbotService(pdf_path=PDF_PATH)
+
+# Initialize ChatbotService for the selected provider
+PROVIDER_NAME = "gemini"  # Change to "openai" for OpenAI
+chatbot_service = ChatbotService(pdf_path=PDF_PATH, config=config, provider_name=PROVIDER_NAME)
 
 router = APIRouter()
+
 
 @router.post("/assist-genie/api/v1/chat")
 def chat_endpoint(

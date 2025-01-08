@@ -5,6 +5,7 @@ from app.models.embedding import EmbeddingsGenerator
 from app.controllers.vector_store import VectorStore
 import tiktoken
 import os,yaml
+from app.controllers.llmfactory import LLMFactory
 from app.controllers import CONFIG_FILE_PATH,set_config_location
 from langchain_community.embeddings import OpenAIEmbeddings
 
@@ -20,18 +21,22 @@ class openAIAPIKEY:
         self.embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
 class ChatbotService:
-    def __init__(self, pdf_path):
+    def __init__(self, pdf_path, config, provider_name):
         self.reader = DataReader(pdf_path)
-        self.embeddings_generator = openAIAPIKEY()
-        self.llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key= openai_api_key )
+        self.config = config
+        self.provider_name = provider_name
+        self.llm_factory = LLMFactory(config, provider_name)
+        self.llm = self.llm_factory.get_llm()
+        self.embeddings = self.llm_factory.get_embeddings()
         self.qa_chain = None
-        self.tokenizer = tiktoken.encoding_for_model("gpt-4")
+
         self.initialize_service()
 
     def initialize_service(self):
+        """Initializes the QA service."""
         pdf_text = self.reader.read_pdf()
         docs = self.reader.split_text_into_chunks(pdf_text)
-        vector_store = VectorStore(self.embeddings_generator.embeddings)
+        vector_store = VectorStore(self.embeddings)
         vector_store.create_vector_store(docs)
         retriever = vector_store.get_retriever()
         self.qa_chain = RetrievalQA.from_chain_type(llm=self.llm, retriever=retriever)
