@@ -151,7 +151,10 @@ def main():
 
 if __name__ == "__main__":
     main()////////////////////
-    def main():
+
+
+
+def main():
     print("=" * 80)
     print("Welcome to the Agentic AI-Powered Document Query System")
     print("This system processes and stores documents, enabling efficient querying by job family.")
@@ -160,19 +163,14 @@ if __name__ == "__main__":
     # Step 1: Process PDFs and store data
     process_all_pdfs()
 
-    # Step 2: Print the stored data
-    print("\nData stored in VECTOR_STORE:")
+    # Step 2: Verify and print stored data
+    print("\nChecking stored data in VECTOR_STORE:")
     for store_name, store_data in VECTOR_STORE.items():
-        print(f"\nBucket: {store_name}")
-        print(f"Number of chunks: {len(store_data['chunks'])}")
-        print(f"Number of embeddings: {len(store_data['embeddings'])}")
-        print("Sample Chunk:")
-        if store_data["chunks"]:
-            print(f"- {store_data['chunks'][0]}")
-        print("Sample Embedding:")
         if store_data["embeddings"]:
-            print(f"- {store_data['embeddings'][0][:5]}...")  # Print first 5 values of the embedding
+            print(f"\nData stored successfully for bucket: {store_name}")
+            print(f"First embedding (truncated): {store_data['embeddings'][0][:5]}...")  # Print first 5 values
+        else:
+            print(f"\nNo embeddings found for bucket: {store_name}")
 
     # Step 3: Interactive Chat
     interactive_chat()
-
