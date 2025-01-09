@@ -3,11 +3,11 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from google.cloud import alloydb_v1beta
 from vertexai.preview.language_models import TextGenerationModel
-#
+
 # Initialize Vertex AI
 import vertexai
 vertexai.init(project="playpen-33fcd2", location="europe-central12")
-GENAI_MODEL = TextGenerationModel.from_pretrained("text-bison@001")  # Adjust model name if needed
+GENAI_MODEL = TextGenerationModel.from_pretrained("text-bison@001")
 
 # AlloyDB Credentials
 ALLOYDB_HOST = "your-alloydb-instance-ip"
@@ -55,14 +55,24 @@ def generate_embeddings(chunks):
     for chunk in chunks:
         try:
             response = GENAI_MODEL.predict(chunk)
-            embedding = response.text_embedding  # Check for the correct attribute
+            embedding = response.text_embedding  # Adjust as per the SDK documentation
             embeddings.append(embedding)
         except Exception as e:
             print(f"Error generating embedding for chunk: {e}")
     return embeddings
 
 def create_vector_store_in_alloydb(store_name, chunks, embeddings):
-    """Store embeddings into AlloyDB."""
+    """
+    Store embeddings into AlloyDB.
+    
+    Args:
+        store_name (str): Name of the bucket.
+        chunks (list): List of text chunks.
+        embeddings (list): Embeddings for the chunks.
+
+    Returns:
+        None
+    """
     try:
         import psycopg2
         connection = psycopg2.connect(
@@ -101,7 +111,17 @@ def create_vector_store_in_alloydb(store_name, chunks, embeddings):
             connection.close()
 
 def retrieve_from_alloydb(store_name, query_embedding, top_k=5):
-    """Retrieve relevant documents from AlloyDB using embeddings."""
+    """
+    Retrieve relevant documents from AlloyDB using embeddings.
+    
+    Args:
+        store_name (str): Name of the bucket.
+        query_embedding (list): Query embedding.
+        top_k (int): Number of results to retrieve.
+
+    Returns:
+        list: Relevant text chunks.
+    """
     try:
         import psycopg2
         connection = psycopg2.connect(
@@ -131,7 +151,9 @@ def retrieve_from_alloydb(store_name, query_embedding, top_k=5):
 
 ### Main Functions ###
 def process_all_pdfs():
-    """Process all PDFs and store them in AlloyDB."""
+    """
+    Process all PDFs and store them in AlloyDB.
+    """
     print("\nProcessing all PDFs and storing data in AlloyDB...")
 
     for store_name, pdf_path in PDF_FILES.items():
@@ -152,47 +174,48 @@ def process_all_pdfs():
 
     print("\nAll PDFs have been processed and stored successfully.")
 
-def interactive_chat(store_name):
-    """Start an interactive chatbot for a given bucket."""
-    print(f"\nStarting Chatbot for '{store_name}' bucket. (Type 'exit' to quit)...")
-
-    while True:
-        query = input("\nAsk a question: ")
-        if query.lower() == "exit":
-            print("Returning to main menu...")
-            break
-
-        query_embedding = GENAI_MODEL.predict(query).text_embedding  # Adjust attribute if needed
-        results = retrieve_from_alloydb(store_name, query_embedding)
-
-        if not results:
-            print(f"No relevant information found in the '{store_name}' bucket.")
-        else:
-            print(f"Top Results:\n{results}")
-
-### Main Function ###
-def main():
-    print("=" * 80)
-    print("Welcome to the Gemini-Powered Document Query System with AlloyDB")
-    print("=" * 80)
-
-    process_all_pdfs()
-
+def interactive_chat():
+    """
+    Allow the user to select a bucket and ask questions.
+    """
     while True:
         print("\nAvailable buckets for querying:")
         for bucket in PDF_FILES.keys():
             print(f"- {bucket}")
 
-        selected_bucket = input("\nSelect a bucket to query (data_engineer/software_engineer/platform_engineer): ").strip().lower()
+        selected_bucket = input("\nSelect a bucket to query (data_engineer/software_engineer/platform_engineer) or 'exit' to quit: ").strip().lower()
         if selected_bucket == "exit":
-            print("\nThank you for using the Document Query System. Goodbye!")
+            print("\nThank you for using the Agentic AI System. Goodbye!")
             break
 
         if selected_bucket not in PDF_FILES:
             print("\nInvalid bucket name. Please choose a valid option.")
             continue
 
-        interactive_chat(selected_bucket)
+        print(f"\nStarting Chatbot for '{selected_bucket}' bucket. (Type 'exit' to quit)...")
+
+        while True:
+            query = input("\nAsk a question: ")
+            if query.lower() == "exit":
+                print("Returning to bucket selection...")
+                break
+
+            query_embedding = GENAI_MODEL.predict(query).text_embedding  # Adjust attribute if needed
+            results = retrieve_from_alloydb(selected_bucket, query_embedding)
+
+            if not results:
+                print(f"No relevant information found in the '{selected_bucket}' bucket.")
+            else:
+                print(f"Top Results:\n{results}")
+
+def main():
+    print("=" * 80)
+    print("Welcome to the Agentic AI-Powered Document Query System with AlloyDB")
+    print("This system processes and stores documents, enabling efficient querying by job family.")
+    print("=" * 80)
+
+    process_all_pdfs()
+    interactive_chat()
 
 if __name__ == "__main__":
     main()
