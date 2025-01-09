@@ -150,4 +150,29 @@ def main():
     interactive_chat()
 
 if __name__ == "__main__":
-    main()
+    main()////////////////////
+    def main():
+    print("=" * 80)
+    print("Welcome to the Agentic AI-Powered Document Query System")
+    print("This system processes and stores documents, enabling efficient querying by job family.")
+    print("=" * 80)
+
+    # Step 1: Process PDFs and store data
+    process_all_pdfs()
+
+    # Step 2: Print the stored data
+    print("\nData stored in VECTOR_STORE:")
+    for store_name, store_data in VECTOR_STORE.items():
+        print(f"\nBucket: {store_name}")
+        print(f"Number of chunks: {len(store_data['chunks'])}")
+        print(f"Number of embeddings: {len(store_data['embeddings'])}")
+        print("Sample Chunk:")
+        if store_data["chunks"]:
+            print(f"- {store_data['chunks'][0]}")
+        print("Sample Embedding:")
+        if store_data["embeddings"]:
+            print(f"- {store_data['embeddings'][0][:5]}...")  # Print first 5 values of the embedding
+
+    # Step 3: Interactive Chat
+    interactive_chat()
+
