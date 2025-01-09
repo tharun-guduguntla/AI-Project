@@ -3,7 +3,7 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from google.cloud import alloydb_v1beta
 from vertexai.preview.language_models import TextGenerationModel
-
+#
 # Initialize Vertex AI
 import vertexai
 vertexai.init(project="playpen-33fcd2", location="europe-central12")
